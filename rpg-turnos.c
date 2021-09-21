@@ -1,37 +1,32 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <conio.h>
+#include <stdlib.h>     // funções rand(), srand() e comunicação com o sistema operacional
+#include <conio.h>      // função getch()
+#include <time.h>       // função time()
+
 
 // usar getch (biblioteca conio, c++?) ou getchar (biblioteca padrão)?
 
 /*
     - batalha de turnos: heróis x vilões DC
-    - heróis: superman, woderwoman, batman, flash, aquaman
-    - vilões: lexluthor, coringa, arlequina, heravenenosa, pinguim
+    - heróis: superman, mulher maravilha, batman, flash, aquaman
+    - vilões: lex luthor, coringa, arlequina, heravenenosa, flash reverso
     - opções: ataque, defesa, habilidade especial (quando disponível pelo cooldown)
 
     
     HABILIDADES ESPECIAIS:
-
     superman -> visão de calor (intervalo de 3 golpes, inimigo perde 20% hp)
-    wondewoman -> laço da verdade (intervalo de 4 golpes, inimigo perde 10% do ataque)
+    mulher maravilha -> laço da verdade (intervalo de 4 golpes, inimigo perde 10% do ataque)
     flash -> soco de massa infinita (intervalo 5 golpes, inimigo perde 40% hp)
     batman -> armadura (dura intervalo de 3 golpes recebidos, aumenta defesa em 40%)
     aquaman -> tridente (intervalo de 3 golpes, inimigo perde 20% hp)
-
-    coringa/arlequina -> faz civis de refém, explode edifícios
-    lexluthor -> armas de última tecnologia, criptonita APENAS CONTRA SUPERMAN (intervalo de 8 golpes, superman perde 80% defesa)
-    heravenenosa -> hipnose
-    pinguim -> armadilhas 
-
 */
+
 
 // estrutura dos atributos dos personagens
 typedef struct {
 	char nome[20];
 	char info[3][50];
-	char frase[3][50];
 	char habilidade[30];
 	int hpMax;
 	int hp;
@@ -92,8 +87,50 @@ void layoutHeroi(Personagem heroi, int erro) {
     }
     if (erro == 2) {
         printf("\n Você escolheu o personagem: %s!\n", heroi.nome);
-        printf("\n Pressione qualquer tecla para voltar para o menu.\n");
+        printf("\n Pressione qualquer tecla para voltar ao menu.\n");
     }
+}
+
+
+// layout dos créditos
+void layoutCreditos() {
+  system("cls");
+  printf("*=============================================================*\n");
+  printf("|                                                              \n");
+  printf("|       Este programa foi originalmente criado por mim,        \n");
+  printf("|                       CAROLINA RICCOMI,                      \n");
+  printf("|     e outros quatro colegas de classe para a disciplina      \n");
+  printf("|    de Programação Estruturada da graduação em Ciência da     \n");
+  printf("|                  Computação em março de 2021.                \n");
+  printf("|                                                              \n");
+  printf("|    Várias alterações foram realizadas posteriormente para    \n");
+  printf("|                     chegar a essa versão.                    \n");
+  printf("|                                                              \n");
+  printf("|                                                              \n");
+  printf("|                                                              \n");
+  printf("|        (Pressione qualquer tecla para voltar ao menu)        \n");
+  printf("*=============================================================*\n");
+}
+
+
+// layout que apresenta a próxima batalha
+void layoutInicioBatalha(Personagem *player, Personagem *bot) {
+  system("cls");
+  printf("*=============================================================*\n");
+  printf("|                      PRÓXIMA BATALHA:                        \n");
+  printf("|                                                              \n");
+  printf("|                                                              \n");
+  printf("|    Herói: %s\n", player->nome);
+  printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", player->hpMax, player->atk, player->def);
+  printf("|    Habilidade especial: %s\n", player->habilidade);
+  printf("|                                                              \n");
+  printf("|                           VS                                 \n");
+  printf("|                                                              \n");
+  printf("|    Vilão: %s\n", bot->nome);
+  printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", bot->hpMax, bot->atk, bot->def);
+  printf("|    Habilidade especial: %s\n", bot->habilidade);
+  printf("*=============================================================*\n");
+  getch();
 }
 
 
@@ -136,8 +173,13 @@ int escolherHeroi(Personagem heroi[]) {
                 break;
         }
     } while (voltaMenu == 0);
+}
 
-    //return (navegando); // É NECESSÁRIO????????
+
+// define o vilão gerando um número aleatório de 0 a 4
+int gerarVilao() {
+  srand(time(NULL));
+  return (rand() % 4);
 }
 
 
@@ -145,7 +187,7 @@ void main(){
     Personagem heroi[5];
     Personagem vilao[5];
     
-	// definindo personagens
+	// definindo heróis
 	strcpy(heroi[0].nome, "Superman");
 	strcpy(heroi[0].info[0], "000");
 	strcpy(heroi[0].info[1], "000");
@@ -173,9 +215,9 @@ void main(){
 	strcpy(heroi[2].info[1], "222");
 	strcpy(heroi[2].info[2], "222");
 	strcpy(heroi[2].habilidade, "armadura Hellbat");
-	heroi[2].hpMax = 100;
+	heroi[2].hpMax = 120;
 	heroi[2].hp = heroi[2].hpMax;
-	heroi[2].atk = 10;
+	heroi[2].atk = 11;
 	heroi[2].def = 10;
 	heroi[2].cooldown = 0;
 	
@@ -186,7 +228,7 @@ void main(){
 	strcpy(heroi[3].habilidade, "soco de massa infinita");
 	heroi[3].hpMax = 150;
 	heroi[3].hp = heroi[3].hpMax;
-	heroi[3].atk = 12;
+	heroi[3].atk = 13;
 	heroi[3].def = 12;
 	heroi[3].cooldown = 0;
 	
@@ -197,9 +239,66 @@ void main(){
 	strcpy(heroi[4].habilidade, "Tridente de Netuno");
 	heroi[4].hpMax = 150;
 	heroi[4].hp = heroi[4].hpMax;
-	heroi[4].atk = 12;
+	heroi[4].atk = 15;
 	heroi[4].def = 12;
 	heroi[4].cooldown = 0;
+	
+	
+	// definindo vilões
+	strcpy(vilao[0].nome, "Lex Luthor");
+	strcpy(vilao[0].info[0], "aaa");
+	strcpy(vilao[0].info[1], "aaa");
+	strcpy(vilao[0].info[2], "aaa");
+	strcpy(vilao[0].habilidade, "armas de última tecnologia");
+	vilao[0].hpMax = 110;
+	vilao[0].hp = heroi[0].hpMax;
+	vilao[0].atk = 15;
+	vilao[0].def = 12;
+	vilao[0].cooldown = 0;
+	
+	strcpy(vilao[1].nome, "Arlequina");
+	strcpy(vilao[1].info[0], "bbb");
+	strcpy(vilao[1].info[1], "bbb");
+	strcpy(vilao[1].info[2], "bbb");
+	strcpy(vilao[1].habilidade, "acrobacias e inteligência");
+	vilao[1].hpMax = 120;
+	vilao[1].hp = heroi[1].hpMax;
+	vilao[1].atk = 18;
+	vilao[1].def = 10;
+	vilao[1].cooldown = 0;
+	
+	strcpy(vilao[2].nome, "Coringa");
+	strcpy(vilao[2].info[0], "ccc");
+	strcpy(vilao[2].info[1], "ccc");
+	strcpy(vilao[2].info[2], "ccc");
+	strcpy(vilao[2].habilidade, "imprevisibilidade e loucura");
+	vilao[2].hpMax = 125;
+	vilao[2].hp = heroi[2].hpMax;
+	vilao[2].atk = 19;
+	vilao[2].def = 15;
+	vilao[2].cooldown = 0;
+	
+	strcpy(vilao[3].nome, "Hera Venenosa");
+	strcpy(vilao[3].info[0], "ddd");
+	strcpy(vilao[3].info[1], "ddd");
+	strcpy(vilao[3].info[2], "ddd");
+	strcpy(vilao[3].habilidade, "hipnose");
+	vilao[3].hpMax = 160;
+	vilao[3].hp = heroi[3].hpMax;
+	vilao[3].atk = 20;
+	vilao[3].def = 13;
+	vilao[3].cooldown = 0;
+	
+	strcpy(vilao[4].nome, "Flash Reverso");
+    strcpy(vilao[4].info[0], "eee");
+	strcpy(vilao[4].info[1], "eee");
+	strcpy(vilao[4].info[2], "eee");
+	strcpy(vilao[4].habilidade, "manipulação temporal");
+	vilao[4].hpMax = 150;
+	vilao[4].hp = heroi[4].hpMax;
+	vilao[4].atk = 19;
+	vilao[4].def = 16;
+	vilao[4].cooldown = 0;
 
 	int sair = 0, verificaPersonagem = 0;
 	int comando, heroiEscolhido;
@@ -212,12 +311,12 @@ void main(){
 	    scanf("%i", &comando);
 	    
 		switch (comando) {
-			// usuario escolhe sair do programa
+			// usuário escolhe sair do programa
 			case 0: 
 		        sair++;
 		        break;
 			
-			//usuario escolhe selecionar personagem
+			// usuário escolhe selecionar personagem
 		    case 1: 
 		        layoutHeroi(heroi[0], 0);
 		        heroiEscolhido = escolherHeroi(heroi);
@@ -225,20 +324,34 @@ void main(){
 		        layoutMenu(0);
 		        break;
 
-			//usuario escolhe iniciar a batalha
+			// usuário escolhe iniciar a batalha
 		    case 2: 
-		       	printf("escolheu iniciar");
+		        if (verificaPersonagem = 0) layoutMenu(2);
+		        else{
+		            // cria os dois jogadores e dá início à batalha
+		            Personagem player = heroi[heroiEscolhido];
+		            int defineVilao = gerarVilao();
+		            Personagem bot = vilao[defineVilao];
+		            batalha(&player, &bot);
+		        }
 		       	break;
 
-			// usuario escolhe ver os créditos
+			// usuário escolhe ver os créditos
 		    case 3:
-		        printf("escolheu créditos");
+		        layoutCreditos();
+		        getch();
+		        layoutMenu(0);
 		        break;
 
-			// usuario escolhe um comando não existente
+			// usuário escolhe um comando não existente
 		    default:
 		        layoutMenu(1);
 		        break;
 		}
 	} while (sair == 0);
+}
+
+
+void batalha(Personagem *player, Personagem *bot) {
+    layoutInicioBatalha(player, bot);
 }
