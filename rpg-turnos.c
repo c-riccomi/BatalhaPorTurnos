@@ -4,8 +4,14 @@
 #include <conio.h>      // função getch()
 #include <time.h>       // função time()
 
-
-// usar getch (biblioteca conio, c++?) ou getchar (biblioteca padrão)?
+/*  PRÓXIMOS PASSOS:
+    funções faltando: atacar, curar, especial, tomarAcoes, vencedor
+    finalizar função batalha
+    implementar frases de ataque dos personagens
+    
+    OBSERVAÇÕES:
+    após a batalha, entra direto no catálogo
+*/
 
 /*
     - batalha de turnos: heróis x vilões DC
@@ -16,7 +22,7 @@
     
     HABILIDADES ESPECIAIS:
     superman -> visão de calor (intervalo de 3 golpes, inimigo perde 20% hp)
-    mulher maravilha -> laço da verdade (intervalo de 4 golpes, inimigo perde 10% do ataque)
+    mulher maravilha -> laço da verdade (intervalo de 4 golpes, inimigo perde 30% do ataque)
     flash -> soco de massa infinita (intervalo 5 golpes, inimigo perde 40% hp)
     batman -> armadura (dura intervalo de 3 golpes recebidos, aumenta defesa em 40%)
     aquaman -> tridente (intervalo de 3 golpes, inimigo perde 20% hp)
@@ -54,7 +60,7 @@ void layoutMenu(int erro) {
 	printf("|                                                              \n");
 	printf("|                                                 (0) Sair     \n");
 	printf("*=============================================================*\n");
-	
+        	
 	if (erro == 1) printf("\n Comando inválido!\n");
 	if (erro == 2) printf("\n Por favor, escolha um personagem antes de iniciar o jogo!\n");
 	printf("\n Digite uma das opções acima e pressione enter:  ");
@@ -94,43 +100,63 @@ void layoutHeroi(Personagem heroi, int erro) {
 
 // layout dos créditos
 void layoutCreditos() {
-  system("cls");
-  printf("*=============================================================*\n");
-  printf("|                                                              \n");
-  printf("|       Este programa foi originalmente criado por mim,        \n");
-  printf("|                       CAROLINA RICCOMI,                      \n");
-  printf("|     e outros quatro colegas de classe para a disciplina      \n");
-  printf("|    de Programação Estruturada da graduação em Ciência da     \n");
-  printf("|                  Computação em março de 2021.                \n");
-  printf("|                                                              \n");
-  printf("|    Várias alterações foram realizadas posteriormente para    \n");
-  printf("|                     chegar a essa versão.                    \n");
-  printf("|                                                              \n");
-  printf("|                                                              \n");
-  printf("|                                                              \n");
-  printf("|        (Pressione qualquer tecla para voltar ao menu)        \n");
-  printf("*=============================================================*\n");
+    system("cls");
+    printf("*=============================================================*\n");
+    printf("|                                                              \n");
+    printf("|       Este programa foi originalmente criado por mim,        \n");
+    printf("|                       CAROLINA RICCOMI,                      \n");
+    printf("|     e outros quatro colegas de classe para a disciplina      \n");
+    printf("|    de Programação Estruturada da graduação em Ciência da     \n");
+    printf("|                  Computação em março de 2021.                \n");
+    printf("|                                                              \n");
+    printf("|    Várias alterações foram realizadas posteriormente para    \n");
+    printf("|                     chegar a essa versão.                    \n");
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|        (Pressione qualquer tecla para voltar ao menu)        \n");
+    printf("*=============================================================*\n");
 }
-
+    
 
 // layout que apresenta a próxima batalha
 void layoutInicioBatalha(Personagem *player, Personagem *bot) {
-  system("cls");
-  printf("*=============================================================*\n");
-  printf("|                      PRÓXIMA BATALHA:                        \n");
-  printf("|                                                              \n");
-  printf("|                                                              \n");
-  printf("|    Herói: %s\n", player->nome);
-  printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", player->hpMax, player->atk, player->def);
-  printf("|    Habilidade especial: %s\n", player->habilidade);
-  printf("|                                                              \n");
-  printf("|                           VS                                 \n");
-  printf("|                                                              \n");
-  printf("|    Vilão: %s\n", bot->nome);
-  printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", bot->hpMax, bot->atk, bot->def);
-  printf("|    Habilidade especial: %s\n", bot->habilidade);
-  printf("*=============================================================*\n");
-  getch();
+    system("cls");
+    printf("*=============================================================*\n");
+    printf("|                      PRÓXIMA BATALHA:                        \n");
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|    Herói: %s\n", player->nome);
+    printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", player->hpMax, player->atk, player->def);
+    printf("|    Habilidade especial: %s\n", player->habilidade);
+    printf("|                                                              \n");
+    printf("|                           VS                                 \n");
+    printf("|                                                              \n");
+    printf("|    Vilão: %s\n", bot->nome);
+    printf("|    Vida: %d     Ataque: %d     Defesa: %d\n", bot->hpMax, bot->atk, bot->def);
+    printf("|    Habilidade especial: %s\n", bot->habilidade);
+    printf("*=============================================================*\n");
+    getch();
+}
+
+
+// layout que mostra o player e bot durante a batalha
+void layoutBatalha(Personagem *player, Personagem *bot, int cont, int limite, char *habilidadeAgr) {
+    system("cls");
+    printf("*=============================================================*\n");
+    printf("|                       Turno: %d/%d\n", cont, limite);
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|                                     %s: (%d/%d)\n", bot->nome, bot->hp, bot->hpMax);
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|                                                              \n");
+    printf("|  %s: (%d/%d)\n", player->nome, player->hp, player->hpMax);
+    printf("|                                                              \n");
+    printf("|--------------------------------------------------------------\n");
+    printf("|     (1) Atacar     (2) Curar     (3) %s\n", player->habilidade);
+    printf("|                                      %s\n", habilidadeAgr);
+    printf("*=============================================================*\n");
 }
 
 
@@ -178,8 +204,43 @@ int escolherHeroi(Personagem heroi[]) {
 
 // define o vilão gerando um número aleatório de 0 a 4
 int gerarVilao() {
-  srand(time(NULL));
-  return (rand() % 4);
+    srand(time(NULL));
+    return (rand() % 4);
+}
+
+
+// obtém a ação do player no turno atual
+int obterAcaoPlayer(Personagem *player, int *acaoValida) {
+    // parâmetro acaoValida: é 1 quando uma das opções disponíveis é escolhida
+    int acao;
+    scanf("%i", &acao);
+    
+    if (acao < 1 || acao > 4) {
+        printf("\nPor favor, escolha uma ação válida!\n");
+        getch();
+    } else if (acao == 3 && player->cooldown > 0){
+  	    printf("\nA habilidade especial não está disponivel!\nra estar disponivel novamente.\n");
+  	    printf("\nFaltam %d turnos para estar disponivel novamente.\n", player->cooldown);
+  	    printf("\nPor favor, escolha uma ação válida!\n");
+  	    getch();
+    } else {
+        *acaoValida = 1;
+    }
+
+    return acao;
+}
+
+
+// gera uma ação para o bot no turno atual
+int gerarAcaoBot(Personagem *bot) {
+    // caso em que a habilidade especial não está disponivel    
+    if (bot->cooldown > 0){
+  	    srand(time(NULL));
+		return (rand() % 2) + 1;   
+    } else {
+        srand(time(NULL));
+		return (rand() % 3) + 1; 
+    }
 }
 
 
@@ -251,7 +312,7 @@ void main(){
 	strcpy(vilao[0].info[2], "aaa");
 	strcpy(vilao[0].habilidade, "armas de última tecnologia");
 	vilao[0].hpMax = 110;
-	vilao[0].hp = heroi[0].hpMax;
+	vilao[0].hp = vilao[0].hpMax;
 	vilao[0].atk = 15;
 	vilao[0].def = 12;
 	vilao[0].cooldown = 0;
@@ -262,7 +323,7 @@ void main(){
 	strcpy(vilao[1].info[2], "bbb");
 	strcpy(vilao[1].habilidade, "acrobacias e inteligência");
 	vilao[1].hpMax = 120;
-	vilao[1].hp = heroi[1].hpMax;
+	vilao[1].hp = vilao[1].hpMax;
 	vilao[1].atk = 18;
 	vilao[1].def = 10;
 	vilao[1].cooldown = 0;
@@ -273,7 +334,7 @@ void main(){
 	strcpy(vilao[2].info[2], "ccc");
 	strcpy(vilao[2].habilidade, "imprevisibilidade e loucura");
 	vilao[2].hpMax = 125;
-	vilao[2].hp = heroi[2].hpMax;
+	vilao[2].hp = vilao[2].hpMax;
 	vilao[2].atk = 19;
 	vilao[2].def = 15;
 	vilao[2].cooldown = 0;
@@ -284,7 +345,7 @@ void main(){
 	strcpy(vilao[3].info[2], "ddd");
 	strcpy(vilao[3].habilidade, "hipnose");
 	vilao[3].hpMax = 160;
-	vilao[3].hp = heroi[3].hpMax;
+	vilao[3].hp = vilao[3].hpMax;
 	vilao[3].atk = 20;
 	vilao[3].def = 13;
 	vilao[3].cooldown = 0;
@@ -295,7 +356,7 @@ void main(){
 	strcpy(vilao[4].info[2], "eee");
 	strcpy(vilao[4].habilidade, "manipulação temporal");
 	vilao[4].hpMax = 150;
-	vilao[4].hp = heroi[4].hpMax;
+	vilao[4].hp = vilao[4].hpMax;
 	vilao[4].atk = 19;
 	vilao[4].def = 16;
 	vilao[4].cooldown = 0;
@@ -354,4 +415,28 @@ void main(){
 
 void batalha(Personagem *player, Personagem *bot) {
     layoutInicioBatalha(player, bot);
+    
+    int turno = 0, turnoLimite = 20;
+    
+    while (player->hp > 0 && bot->hp > 0 && turno < turnoLimite) {
+        turno++;
+        int acaoPlayer = 0, acaoValida = 0, acaoBot = 0;
+        
+        char habilidadeAgr[15] = "(disponível)";
+        if (player->cooldown > 0) {
+            for (int i = 12; i > 0; i--) {
+	            habilidadeAgr[i+2] = habilidadeAgr[i];
+	        }
+	        habilidadeAgr[1] = 'i';
+	        habilidadeAgr[2] = 'n';
+        }
+        
+        while (acaoValida == 0) {
+            layoutBatalha(player, bot, turno, turnoLimite, habilidadeAgr);
+            acaoPlayer = obterAcaoPlayer(player, &acaoValida);
+        }
+        
+        acaoBot = gerarAcaoBot(bot);
+        printf("\n acao player: %i, acao bot: %i \n", acaoPlayer, acaoBot);    
+    }
 }
